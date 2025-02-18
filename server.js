@@ -1,13 +1,26 @@
 const express = require('express');
 const mysql = require('mysql2');
 const cors = require('cors');
-
+const path = require('path');
 const app = express();
 app.use(express.json());
 app.use(cors());
 
+const PORT = 3000;
+
+// Middleware
+app.use(express.json());
+
+// Serve static files from the public folder
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Serve index.html on root URL
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
 const db = mysql.createConnection({
-    host: process.env.DB_HOST || 'your-rds-endpoint', // Update with your RDS endpoint
+    host: process.env.DB_HOST.split(':')[0] || 'your-rds-endpoint', // Update with your RDS endpoint
     user: 'admin',
     password: 'yourpassword', // Replace with your MySQL password
     database: 'your_database_name'
