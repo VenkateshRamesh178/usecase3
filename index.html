@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Notes App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            text-align: center;
+        }
+        #noteInput {
+            width: 80%;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        button {
+            padding: 10px 15px;
+            cursor: pointer;
+        }
+        #notesList {
+            margin-top: 20px;
+            text-align: left;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .note {
+            background: #f8f9fa;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .delete-btn {
+            background: red;
+            color: white;
+            border: none;
+            padding: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h2>Simple Notes App</h2>
+    <input type="text" id="noteInput" placeholder="Enter your note here...">
+    <button onclick="addNote()">Add Note</button>
+    <div id="notesList"></div>
+    
+    <script>
+        const API_URL = "http://your-ec2-ip:3000"; // Replace with your EC2 instance IP
+
+        document.addEventListener("DOMContentLoaded", loadNotes);
+
+        async function addNote() {
+            let noteInput = document.getElementById("noteInput");
+            let noteText = noteInput.value.trim();
+            if (noteText === "") return;
+
+            try {
+                await fetch(`${API_URL}/notes`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ text: noteText })
+                });
+                noteInput.value = "";
+                loadNotes();
+            } catch (error) {
+                console.error("Error adding note:", error);
+            }
+        }
+
+        async function loadNotes() {
+            let notesList = document.getElementById("notesList");
+            notesList.innerHTML = "";
+
+            try {
+                let response = await fetch(`${API_URL}/notes`);
+                let notes = await response.json();
+
+                notes.forEach(note => {
+                    let noteElement = document.createElement("div");
+                    noteElement.className = "note";
+                    noteElement.innerHTML = `
+                        <span>${note.text}</span>
+                        <button class="delete-btn" onclick="deleteNote(${note.id})">X</button>
+                    `;
+                    notesList.appendChild(noteElement);
+                });
+            } catch (error) {
+                console.error("Error loading notes:", error);
+            }
+        }
+
+        async function deleteNote(id) {
+            try {
+                await fetch(`${API_URL}/notes/${id}`, { method: "DELETE" });
+                loadNotes();
+            } catch (error) {
+                console.error("Error deleting note:", error);
+            }
+        }
+    </script>
+</body>
+</html>
