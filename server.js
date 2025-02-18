@@ -42,7 +42,7 @@ app.post('/notes', (req, res) => {
     const { text } = req.body;
     if (!text) return res.status(400).json({ message: 'Note text is required' });
 
-    db.query('INSERT INTO notes (text) VALUES (?)', [text], (err, result) => {
+    db.query('INSERT INTO notes (content) VALUES (?)', [text], (err, result) => {
         if (err) return res.status(500).json(err);
         res.json({ id: result.insertId, text });
     });
