@@ -3,7 +3,7 @@ const mysql = require('mysql2');
 
 // Database connection
 const connection = mysql.createConnection({
-    host: process.env.DB_HOST,
+    host: process.env.DB_HOST.split(':')[0],
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD
 });
@@ -21,7 +21,7 @@ connection.query(`CREATE DATABASE IF NOT EXISTS \`${databaseName}\``, (err) => {
 
     // Connect to the created database
     const db = mysql.createConnection({
-        host: process.env.DB_HOST,
+        host: process.env.DB_HOST.split(':')[0],
         user: process.env.DB_USER,
         password: process.env.DB_PASSWORD,
         database: databaseName
