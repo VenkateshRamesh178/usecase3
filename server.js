@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const mysql = require('mysql2');
 const cors = require('cors');
@@ -23,7 +24,7 @@ const db = mysql.createConnection({
     host: process.env.DB_HOST.split(':')[0] || 'your-rds-endpoint', // Update with your RDS endpoint
     user: 'admin',
     password: 'yourpassword', // Replace with your MySQL password
-    database: 'your_database_name'
+    database: process.env.DB_NAME
 });
 
 db.connect(err => {
